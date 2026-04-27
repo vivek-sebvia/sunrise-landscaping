@@ -1,55 +1,370 @@
 ---
-import Layout from '../layouts/Layout.astro'
-import { client } from '../client.config.js'
+import Layout from "../layouts/Layout.astro";
+import { client } from "../client.config.js";
 
-let services = []
+let services = [];
 try {
-  const res = await fetch(`${client.cmsUrl}/api/services?where[tenant.slug][equals]=${client.tenantSlug}&limit=50`)
-  services = (await res.json()).docs || []
+  const res = await fetch(
+    `${client.cmsUrl}/api/services?where[tenant.slug][equals]=${client.tenantSlug}&limit=50`,
+  );
+  services = (await res.json()).docs || [];
 } catch {}
 
-const displayServices = services.length
-  ? services
-  : client.services.map((s: string) => ({ title: s, description: `Expert ${s.toLowerCase()} services by licensed professionals in ${client.city}, ${client.state}.` }))
+const serviceImages: Record<string, string> = {
+  "Lawn Mowing": "/images/lawn_care.png",
+  "Hedge Cutting": "/images/tree_trimming.png",
+  "Flower Planting": "/images/planting.png",
+  "Garden Restoration": "/images/garden_design.png",
+  "Tree Trimming": "/images/tree_trimming.png",
+  Irrigation: "/images/irrigation.png",
+  Mulching: "/images/mulching.png",
+  "Sod Installation": "/images/sod_installation.png",
+  Hardscaping: "/images/hardscaping.png",
+  "Leaf Removal": "/images/leaf_removal.png",
+};
 
-const primary = client.primaryColor || '#2d5a3d'
+const displayServices = services.length
+  ? services.map((s: any) => ({
+      title: s.title,
+      description: s.description,
+      image: serviceImages[s.title as string] || "/images/landscaping.png",
+    }))
+  : client.services.map((s: string) => ({
+      title: s,
+      description: `Expert ${s.toLowerCase()} services by licensed professionals in ${client.city}, ${client.state}. We use premium tools and sustainable practices.`,
+      image: serviceImages[s] || "/images/garden_design.png",
+    }));
+
+const primary = client.primaryColor || "#2d5a3d";
 ---
 
-<Layout title="Services" description={`Professional ${client.industry} services in ${client.city}, ${client.state}.`}>
-
-  <section style={`padding:4rem 1.5rem;background:${primary}12;text-align:center`}>
-    <div style="max-width:1200px;margin:0 auto">
-      <h1 style="font-size:2.5rem;font-weight:800;margin-bottom:1rem">Our Services</h1>
-      <p style="color:#6b7280;max-width:600px;margin:0 auto;font-size:1.05rem">
-        Professional {client.industry} services for homeowners and businesses in {client.city} and surrounding areas.
-      </p>
-    </div>
-  </section>
-
-  <section style="padding:4rem 1.5rem">
-    <div style="max-width:1200px;margin:0 auto">
-      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:1.5rem">
-        {displayServices.map((service: any) => (
-          <div style="display:flex;gap:1.25rem;padding:1.5rem;border-radius:12px;border:1px solid #e5e7eb">
-            <div style={`flex-shrink:0;width:48px;height:48px;border-radius:12px;background:${primary}22;display:flex;align-items:center;justify-content:center`}>
-              <svg width="24" height="24" fill="none" stroke={primary} viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-            </div>
-            <div>
-              <h2 style="font-size:1.1rem;font-weight:700;margin-bottom:0.4rem">{service.title}</h2>
-              <p style="color:#6b7280;font-size:0.875rem;line-height:1.6">{service.description}</p>
-            </div>
-          </div>
-        ))}
+<Layout
+  title="Our Services"
+  description={`Professional ${client.industry} services in ${client.city}, ${client.state}. From lawn care to hardscaping.`}
+>
+  <!-- Premium Hero -->
+  <section class="services-hero">
+    <div class="container">
+      <div class="hero-content">
+        <span class="subtitle">EXPERIENCE THE DIFFERENCE</span>
+        <h1>Our <span class="text-accent">Premium Services</span></h1>
+        <p>
+          Transforming ordinary outdoor spaces into extraordinary landscapes in {
+            client.city
+          }. Discover our full range of professional solutions.
+        </p>
       </div>
     </div>
   </section>
 
-  <section style={`padding:4rem 1.5rem;background:${primary};color:#fff;text-align:center`}>
-    <div style="max-width:700px;margin:0 auto">
-      <h2 style="font-size:1.75rem;font-weight:700;margin-bottom:1rem">Need a Service Not Listed?</h2>
-      <p style="opacity:0.9;margin-bottom:1.5rem">Contact us — we handle most {client.industry} needs.</p>
-      <a href="/contact" style="background:#fff;color:#111;padding:0.75rem 2rem;border-radius:10px;font-weight:700">Contact Us</a>
+  <!-- Services Grid -->
+  <section class="services-grid-section">
+    <div class="container">
+      <div class="services-grid">
+        {
+          displayServices.map((service: any) => (
+            <div class="service-card">
+              <div class="card-image">
+                <img src={service.image} alt={service.title} />
+                <div class="image-overlay" />
+                <div class="service-badge">
+                  <i class="fas fa-leaf" />
+                </div>
+              </div>
+              <div class="card-content">
+                <h3>{service.title}</h3>
+                <p>{service.description}</p>
+                <div class="card-footer">
+                  <a href="/contact" class="service-link">
+                    Get a Quote <i class="fas fa-arrow-right" />
+                  </a>
+                </div>
+              </div>
+            </div>
+          ))
+        }
+      </div>
     </div>
   </section>
 
+  <!-- Special Needs CTA -->
+  <section class="services-cta">
+    <div class="container">
+      <div class="cta-card">
+        <div class="cta-content">
+          <i class="fas fa-tools cta-icon"></i>
+          <h2>Need a Custom Solution?</h2>
+          <p>
+            Don't see exactly what you're looking for? We handle a wide variety
+            of custom {client.industry.toLowerCase()} projects tailored to your specific
+            needs.
+          </p>
+          <div class="cta-actions">
+            <a href="/contact" class="btn btn-light">Get My Free Quote</a>
+            <a href={`tel:${client.phone}`} class="btn btn-outline-light">
+              <i class="fas fa-phone-alt"></i>
+              {client.phone}
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <style define:vars={{ primary }}>
+    .container {
+      max-width: 1280px;
+      margin: 0 auto;
+      padding: 0 1.5rem;
+    }
+
+    /* Hero Section */
+    .services-hero {
+      background:
+        linear-gradient(rgba(0, 0, 0, 0.8), rgba(0, 0, 0, 0.8)),
+        url("/images/hero_gardener.png");
+      background-size: cover;
+      background-position: center;
+      padding: 140px 0;
+      color: #fff;
+      text-align: center;
+    }
+    .hero-content {
+      max-width: 800px;
+      margin: 0 auto;
+    }
+    .services-hero h1 {
+      font-size: 4.5rem;
+      font-weight: 900;
+      margin-bottom: 1.5rem;
+      line-height: 1.1;
+    }
+    .services-hero .text-accent {
+      color: #fff;
+      text-shadow: 0 0 20px var(--primary);
+    }
+    .services-hero .subtitle {
+      display: block;
+      font-weight: 800;
+      letter-spacing: 4px;
+      color: var(--primary);
+      margin-bottom: 1rem;
+      filter: brightness(2.5);
+      font-size: 0.9rem;
+    }
+    .services-hero p {
+      font-size: 1.25rem;
+      opacity: 0.9;
+      line-height: 1.7;
+    }
+
+    /* Grid Section */
+    .services-grid-section {
+      padding: 100px 0;
+      background: #f8fafc;
+    }
+    .services-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(360px, 1fr));
+      gap: 40px;
+    }
+
+    .service-card {
+      background: #fff;
+      border-radius: 24px;
+      overflow: hidden;
+      box-shadow: 0 15px 40px rgba(0, 0, 0, 0.05);
+      transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+      border: 1px solid #eee;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .service-card:hover {
+      transform: translateY(-12px);
+      box-shadow: 0 30px 60px rgba(0, 0, 0, 0.1);
+      border-color: var(--primary);
+    }
+
+    .card-image {
+      position: relative;
+      height: 240px;
+      overflow: hidden;
+    }
+    .card-image img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: 0.6s;
+    }
+    .service-card:hover .card-image img {
+      transform: scale(1.1);
+    }
+    .image-overlay {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: linear-gradient(to bottom, transparent, rgba(0, 0, 0, 0.4));
+    }
+
+    .service-badge {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      width: 45px;
+      height: 45px;
+      background: var(--primary);
+      color: #fff;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.2rem;
+      box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+      z-index: 2;
+    }
+
+    .card-content {
+      padding: 40px;
+      flex-grow: 1;
+      display: flex;
+      flex-direction: column;
+    }
+    .card-content h3 {
+      font-size: 1.75rem;
+      font-weight: 800;
+      margin-bottom: 1rem;
+      color: #111;
+    }
+    .card-content p {
+      color: #666;
+      line-height: 1.7;
+      font-size: 1rem;
+      margin-bottom: 2rem;
+      flex-grow: 1;
+    }
+
+    .card-footer {
+      padding-top: 20px;
+      border-top: 1px solid #eee;
+    }
+    .service-link {
+      color: var(--primary);
+      text-decoration: none;
+      font-weight: 800;
+      text-transform: uppercase;
+      font-size: 0.9rem;
+      letter-spacing: 1px;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.75rem;
+      transition: gap 0.3s;
+    }
+    .service-link:hover {
+      gap: 1.25rem;
+    }
+
+    /* CTA Section */
+    .services-cta {
+      padding-bottom: 100px;
+      background: #f8fafc;
+    }
+    .cta-card {
+      background: #111;
+      border-radius: 40px;
+      overflow: hidden;
+      position: relative;
+      text-align: center;
+    }
+    .cta-content {
+      padding: 100px 60px;
+      background: linear-gradient(135deg, rgba(var(--primary-rgb), 0.85), #111);
+      color: #fff;
+      position: relative;
+      z-index: 2;
+    }
+    .cta-icon {
+      font-size: 3rem;
+      color: var(--primary);
+      margin-bottom: 2rem;
+      filter: brightness(1.5);
+    }
+    .cta-card h2 {
+      font-size: 3.5rem;
+      font-weight: 900;
+      margin-bottom: 1.5rem;
+      color: #f8fafc;
+    }
+    .cta-card p {
+      font-size: 1.3rem;
+      opacity: 0.9;
+      max-width: 800px;
+      margin: 0 auto 3rem;
+      line-height: 1.7;
+    }
+
+    .cta-actions {
+      display: flex;
+      gap: 2rem;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    /* Buttons */
+    .btn {
+      padding: 1.1rem 3rem;
+      border-radius: 12px;
+      font-weight: 800;
+      text-decoration: none;
+      transition: 0.4s;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.75rem;
+      cursor: pointer;
+      border: none;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      font-size: 0.9rem;
+    }
+    .btn-light {
+      background: #fff;
+      color: #111;
+    }
+    .btn-light:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
+    }
+    .btn-outline-light {
+      border: 2px solid rgba(255, 255, 255, 0.3);
+      color: #fff;
+    }
+    .btn-outline-light:hover {
+      background: #fff;
+      color: #111;
+      border-color: #fff;
+    }
+
+    @media (max-width: 992px) {
+      .services-hero { padding: 100px 0; }
+      .services-hero h1 { font-size: 3.5rem; }
+      .services-grid { grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 30px; }
+      .cta-card h2 { font-size: 2.8rem; }
+    }
+
+    @media (max-width: 768px) {
+      .services-hero { padding: 80px 0; }
+      .services-hero h1 { font-size: 2.5rem; }
+      .services-hero p { font-size: 1.1rem; }
+      .services-grid-section { padding: 60px 0; }
+      .services-grid { grid-template-columns: 1fr; }
+      .card-content { padding: 30px 20px; }
+      .cta-content { padding: 60px 20px; }
+      .cta-card h2 { font-size: 2rem; }
+      .cta-card p { font-size: 1.1rem; margin-bottom: 2rem; }
+      .cta-actions { flex-direction: column; gap: 1rem; }
+      .btn { width: 100%; justify-content: center; }
+    }
+  </style>
 </Layout>

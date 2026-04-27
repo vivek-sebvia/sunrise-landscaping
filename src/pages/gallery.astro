@@ -1,51 +1,441 @@
 ---
-import Layout from '../layouts/Layout.astro'
-import { client } from '../client.config.js'
+import Layout from "../layouts/Layout.astro";
+import { client } from "../client.config.js";
 
-let gallery = []
+let cmsGallery = [];
 try {
-  const res = await fetch(`${client.cmsUrl}/api/gallery?where[tenant.slug][equals]=${client.tenantSlug}&limit=20`)
-  gallery = (await res.json()).docs || []
+  const res = await fetch(
+    `${client.cmsUrl}/api/gallery?where[tenant.slug][equals]=${client.tenantSlug}&limit=20`,
+  );
+  cmsGallery = (await res.json()).docs || [];
 } catch {}
 
-const primary = client.primaryColor || '#2d5a3d'
+const localProjects = [
+  {
+    title: "Modern Garden Transformation",
+    category: "Design",
+    image: "/images/garden_design.png",
+  },
+  {
+    title: "Custom Patio & Pavers",
+    category: "Hardscaping",
+    image: "/images/hardscaping.png",
+  },
+  {
+    title: "Professional Lawn Restoration",
+    category: "Maintenance",
+    image: "/images/lawn_care.png",
+  },
+  {
+    title: "Seasonal Flower Installation",
+    category: "Planting",
+    image: "/images/planting.png",
+  },
+  {
+    title: "Smart Irrigation System",
+    category: "Irrigation",
+    image: "/images/irrigation.png",
+  },
+  {
+    title: "Spring Mulch & Cleanup",
+    category: "Maintenance",
+    image: "/images/mulching.png",
+  },
+  {
+    title: "Precision Tree Trimming",
+    category: "Tree Care",
+    image: "/images/tree_trimming.png",
+  },
+  {
+    title: "Premium Sod Installation",
+    category: "Lawn Care",
+    image: "/images/sod_installation.png",
+  },
+  {
+    title: "Eco-Friendly Leaf Removal",
+    category: "Maintenance",
+    image: "/images/leaf_removal.png",
+  },
+];
+
+const displayGallery =
+  cmsGallery.length > 0
+    ? cmsGallery.map((item: any) => ({
+        title: item.title,
+        category: item.category || "Project",
+        image: item.image?.url,
+      }))
+    : localProjects;
+
+const primary = client.primaryColor || "#2d5a3d";
 ---
 
-<Layout title="Gallery" description={`View our work — ${client.name} project gallery.`}>
-
-  <section style={`padding:4rem 1.5rem;background:${primary}12;text-align:center`}>
-    <div style="max-width:1200px;margin:0 auto">
-      <h1 style="font-size:2.5rem;font-weight:800;margin-bottom:1rem">Our Work</h1>
-      <p style="color:#6b7280;font-size:1.05rem">Browse photos from our recent projects.</p>
+<Layout
+  title="Gallery"
+  description={`View our premium landscaping work — ${client.name} project portfolio.`}
+>
+  <!-- Premium Hero -->
+  <section class="gallery-hero">
+    <div class="container">
+      <div class="hero-content">
+        <span class="subtitle">OUR RECENT PROJECTS</span>
+        <h1>Visual <span class="text-accent">Excellence</span> Portfolio</h1>
+        <p>
+          Explore the transformation of outdoor spaces across {client.city}.
+          From minor enhancements to major overhauls, we take pride in every
+          detail.
+        </p>
+      </div>
     </div>
   </section>
 
-  <section style="padding:4rem 1.5rem">
-    <div style="max-width:1200px;margin:0 auto">
-      {gallery.length > 0 ? (
-        <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:1.25rem">
-          {gallery.map((item: any) => (
-            <div style="border-radius:12px;overflow:hidden;border:1px solid #e5e7eb">
-              {item.image?.url && <img src={item.image.url} alt={item.title || 'Project'} style="width:100%;aspect-ratio:4/3;object-fit:cover" />}
-              {item.title && <div style="padding:0.75rem 1rem;font-weight:500;font-size:0.9rem">{item.title}</div>}
+  <!-- Gallery Section -->
+  <section class="gallery-grid-section">
+    <div class="container">
+      <div class="gallery-grid">
+        {
+          displayGallery.map((item: any) => (
+            <div class="gallery-item">
+              <div class="gallery-image-wrapper">
+                <img src={item.image} alt={item.title} />
+                <div class="item-overlay">
+                  <div class="overlay-content">
+                    <span class="item-category">{item.category}</span>
+                    <h3>{item.title}</h3>
+                    <div class="item-action">
+                      <i class="fas fa-search-plus" />
+                    </div>
+                  </div>
+                </div>
+              </div>
             </div>
-          ))}
-        </div>
-      ) : (
-        <div style="text-align:center;padding:4rem;color:#6b7280">
-          <div style="font-size:4rem;margin-bottom:1rem">📸</div>
-          <p style="font-size:1.1rem;font-weight:500;margin-bottom:0.5rem">Photos coming soon!</p>
-          <p style="font-size:0.875rem">Check back for project photos from our team.</p>
-        </div>
-      )}
+          ))
+        }
+      </div>
     </div>
   </section>
 
-  <section style={`padding:4rem 1.5rem;background:${primary};color:#fff;text-align:center`}>
-    <div style="max-width:700px;margin:0 auto">
-      <h2 style="font-size:1.75rem;font-weight:700;margin-bottom:1rem">Like What You See?</h2>
-      <a href="/contact" style="background:#fff;color:#111;padding:0.75rem 2rem;border-radius:10px;font-weight:700">Get Free Quote</a>
+  <!-- Portfolio Stats -->
+  <section class="portfolio-stats">
+    <div class="container">
+      <div class="stats-row">
+        <div class="stat-item">
+          <span class="stat-number">1000+</span>
+          <span class="stat-text">HAPPY CUSTOMERS</span>
+        </div>
+        <div class="stat-item">
+          <span class="stat-number">2500+</span>
+          <span class="stat-text">PROJECTS COMPLETED</span>
+        </div>
+        <div class="stat-item">
+          <span class="stat-number">15+</span>
+          <span class="stat-text">YEARS OF SERVICE</span>
+        </div>
+      </div>
     </div>
   </section>
 
+  <!-- CTA Section -->
+  <section class="gallery-cta">
+    <div class="container">
+      <div class="cta-box">
+        <div class="cta-inner">
+          <h2>Love our work? Let's talk about yours.</h2>
+          <p>
+            Contact {client.name} today to schedule a free consultation and get a
+            quote for your next project.
+          </p>
+          <div class="cta-btns">
+            <a href="/contact" class="btn btn-primary">Get My Free Quote</a>
+            <a href="/services" class="btn btn-outline-light"
+              >Explore Services</a
+            >
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <style define:vars={{ primary }}>
+    .container {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 0 1.5rem;
+    }
+
+    /* Hero Section */
+    .gallery-hero {
+      background:
+        linear-gradient(rgba(0, 0, 0, 0.8), rgba(0, 0, 0, 0.8)),
+        url("/images/garden_design.png");
+      background-size: cover;
+      background-position: center;
+      background-attachment: fixed;
+      padding: 140px 0;
+      color: #fff;
+      text-align: center;
+    }
+    .hero-content {
+      max-width: 850px;
+      margin: 0 auto;
+    }
+    .gallery-hero h1 {
+      font-size: 4.5rem;
+      font-weight: 900;
+      margin-bottom: 1.5rem;
+      line-height: 1.1;
+      color: #fff;
+    }
+    .gallery-hero .text-accent {
+      color: #fff;
+      text-shadow: 0 0 20px var(--primary);
+    }
+    .gallery-hero .subtitle {
+      display: block;
+      font-weight: 800;
+      letter-spacing: 4px;
+      color: var(--primary);
+      margin-bottom: 1rem;
+      filter: brightness(2.5);
+      font-size: 0.9rem;
+    }
+    .gallery-hero p {
+      font-size: 1.25rem;
+      opacity: 0.9;
+      line-height: 1.7;
+    }
+
+    /* Gallery Grid */
+    .gallery-grid-section {
+      padding: 100px 0;
+      background: #fff;
+    }
+    .gallery-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(400px, 1fr));
+      gap: 30px;
+    }
+
+    .gallery-item {
+      position: relative;
+      border-radius: 30px;
+      overflow: hidden;
+      cursor: pointer;
+      aspect-ratio: 4/3;
+      box-shadow: 0 15px 40px rgba(0, 0, 0, 0.05);
+    }
+
+    .gallery-image-wrapper {
+      width: 100%;
+      height: 100%;
+      position: relative;
+    }
+    .gallery-image-wrapper img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: transform 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .item-overlay {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: linear-gradient(
+        to top,
+        rgba(0, 0, 0, 0.9) 0%,
+        rgba(0, 0, 0, 0.4) 50%,
+        transparent 100%
+      );
+      opacity: 0;
+      transition: all 0.4s ease;
+      display: flex;
+      align-items: flex-end;
+      padding: 40px;
+    }
+
+    .gallery-item:hover img {
+      transform: scale(1.15);
+    }
+    .gallery-item:hover .item-overlay {
+      opacity: 1;
+    }
+
+    .overlay-content {
+      transform: translateY(20px);
+      transition: transform 0.4s ease;
+      width: 100%;
+    }
+    .gallery-item:hover .overlay-content {
+      transform: translateY(0);
+    }
+
+    .item-category {
+      display: inline-block;
+      padding: 6px 15px;
+      background: var(--primary);
+      color: #fff;
+      border-radius: 10px;
+      font-size: 0.75rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-bottom: 1rem;
+    }
+
+    .overlay-content h3 {
+      color: #fff;
+      font-size: 1.75rem;
+      font-weight: 800;
+      margin: 0;
+    }
+    .item-action {
+      position: absolute;
+      top: 30px;
+      right: 30px;
+      width: 50px;
+      height: 50px;
+      background: rgba(255, 255, 255, 0.2);
+      backdrop-filter: blur(10px);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #fff;
+      font-size: 1.2rem;
+      transform: scale(0.5);
+      opacity: 0;
+      transition: 0.4s;
+    }
+    .gallery-item:hover .item-action {
+      transform: scale(1);
+      opacity: 1;
+    }
+
+    /* Portfolio Stats */
+    .portfolio-stats {
+      padding: 80px 0;
+      background: #111;
+      color: #fff;
+    }
+    .stats-row {
+      display: flex;
+      justify-content: space-around;
+      text-align: center;
+      flex-wrap: wrap;
+      gap: 40px;
+    }
+    .stat-number {
+      display: block;
+      font-size: 3.5rem;
+      font-weight: 900;
+      color: var(--primary);
+      filter: brightness(1.5);
+      line-height: 1;
+      margin-bottom: 0.5rem;
+    }
+    .stat-text {
+      font-size: 0.9rem;
+      font-weight: 800;
+      letter-spacing: 2px;
+      color: rgba(255, 255, 255, 0.6);
+    }
+
+    /* CTA Section */
+    .gallery-cta {
+      padding: 100px 0;
+      background: #fff;
+    }
+    .cta-box {
+      background: #111;
+      border-radius: 40px;
+      overflow: hidden;
+      position: relative;
+      text-align: center;
+      box-shadow: 0 40px 80px rgba(0, 0, 0, 0.15);
+    }
+    .cta-inner {
+      padding: 100px 60px;
+      background:
+        linear-gradient(135deg, rgba(var(--primary-rgb), 0.8), #111),
+        url("/images/hardscaping.png");
+      background-size: cover;
+      color: #fff;
+      position: relative;
+      z-index: 2;
+    }
+    .cta-box h2 {
+      font-size: 3.5rem;
+      font-weight: 900;
+      margin-bottom: 1.5rem;
+      color: #fff;
+    }
+    .cta-box p {
+      font-size: 1.3rem;
+      opacity: 0.9;
+      max-width: 800px;
+      margin: 0 auto 3rem;
+      line-height: 1.7;
+    }
+    .cta-btns {
+      display: flex;
+      gap: 2rem;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    /* Buttons */
+    .btn {
+      padding: 1.1rem 3rem;
+      border-radius: 12px;
+      font-weight: 800;
+      text-decoration: none;
+      transition: 0.4s;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.75rem;
+      cursor: pointer;
+      border: none;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      font-size: 0.9rem;
+    }
+    .btn-primary {
+      background: var(--primary);
+      color: #fff;
+    }
+    .btn-primary:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 15px 30px rgba(var(--primary-rgb), 0.3);
+    }
+    .btn-outline-light {
+      border: 2px solid rgba(255, 255, 255, 0.3);
+      color: #fff;
+    }
+    .btn-outline-light:hover {
+      background: #fff;
+      color: #111;
+      border-color: #fff;
+    }
+
+    @media (max-width: 768px) {
+      .gallery-hero h1 {
+        font-size: 3rem;
+      }
+      .gallery-grid {
+        grid-template-columns: 1fr;
+      }
+      .cta-box h2 {
+        font-size: 2.2rem;
+      }
+      .cta-inner {
+        padding: 60px 20px;
+      }
+      .stat-number {
+        font-size: 2.5rem;
+      }
+    }
+  </style>
 </Layout>

@@ -2,54 +2,235 @@
 import Layout from '../../layouts/Layout.astro'
 import { client } from '../../client.config.js'
 
-let posts = []
+let cmsPosts = []
 try {
   const res = await fetch(`${client.cmsUrl}/api/blog?where[tenant.slug][equals]=${client.tenantSlug}&limit=20&sort=-createdAt`)
-  posts = (await res.json()).docs || []
+  cmsPosts = (await res.json()).docs || []
 } catch {}
+
+const localPosts = [
+  {
+    title: 'Spring Landscaping: 5 Essential Tips for a Beautiful Garden',
+    slug: 'spring-landscaping-tips',
+    excerpt: 'Prepare your outdoor space for the blooming season with these expert spring maintenance tips.',
+    image: '/images/garden_design.png',
+    date: 'March 15, 2026',
+    category: 'Seasonal'
+  },
+  {
+    title: 'How to Maintain a Lush Green Lawn All Summer Long',
+    slug: 'summer-lawn-care',
+    excerpt: 'Discover the secrets to keeping your grass vibrant and healthy even in the peak summer heat.',
+    image: '/images/lawn_care.png',
+    date: 'April 02, 2026',
+    category: 'Lawn Care'
+  },
+  {
+    title: 'The Benefits of Professional Mulching for Your Plants',
+    slug: 'benefits-of-mulching',
+    excerpt: 'Learn why mulching is one of the most important things you can do for your landscape health.',
+    image: '/images/mulching.png',
+    date: 'April 10, 2026',
+    category: 'Maintenance'
+  },
+  {
+    title: 'Tree Trimming 101: Why Regular Pruning is Critical',
+    slug: 'tree-trimming-importance',
+    excerpt: 'Pruning is more than just aesthetics; it is vital for the safety and longevity of your trees.',
+    image: '/images/tree_trimming.png',
+    date: 'April 18, 2026',
+    category: 'Tree Care'
+  },
+  {
+    title: 'Hardscaping: Adding Both Beauty and Value to Your Home',
+    slug: 'hardscaping-value',
+    excerpt: 'Explore how stone walls, patios, and walkways can transform your property value.',
+    image: '/images/hardscaping.png',
+    date: 'April 25, 2026',
+    category: 'Design'
+  }
+];
+
+const posts = cmsPosts.length > 0 
+  ? cmsPosts.map((p: any) => ({
+      title: p.title,
+      slug: p.slug,
+      excerpt: p.excerpt,
+      image: p.image?.url || '/images/garden_design.png',
+      date: p.createdAt ? new Date(p.createdAt).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }) : 'Recently',
+      category: p.category || 'News'
+    }))
+  : localPosts;
 
 const primary = client.primaryColor || '#2d5a3d'
 ---
 
-<Layout title="Blog" description={`Tips and news from ${client.name}.`}>
+<Layout title="Blog & Insights" description={`Expert landscaping tips, news, and insights from ${client.name}.`}>
 
-  <section style={`padding:4rem 1.5rem;background:${primary}12;text-align:center`}>
-    <div style="max-width:1200px;margin:0 auto">
-      <h1 style="font-size:2.5rem;font-weight:800;margin-bottom:1rem">Blog & Tips</h1>
-      <p style="color:#6b7280;font-size:1.05rem">Expert advice and news from {client.name}.</p>
+  <!-- Premium Hero -->
+  <section class="blog-hero">
+    <div class="container">
+      <div class="hero-content">
+        <span class="subtitle">KNOWLEDGE BASE</span>
+        <h1>Outdoor <span class="text-accent">Insights</span> & News</h1>
+        <p>Expert advice from the {client.industry.toLowerCase()} professionals at {client.name}. Stay updated with the latest trends and seasonal tips.</p>
+      </div>
     </div>
   </section>
 
-  <section style="padding:4rem 1.5rem">
-    <div style="max-width:1200px;margin:0 auto">
-      {posts.length > 0 ? (
-        <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:1.5rem">
-          {posts.map((post: any) => (
-            <a href={`/blog/${post.slug}`} style="display:block;border-radius:12px;border:1px solid #e5e7eb;overflow:hidden;text-decoration:none;color:#111">
-              {post.image?.url && (
-                <div style="aspect-ratio:16/9;overflow:hidden;background:#f3f4f6">
-                  <img src={post.image.url} alt={post.title} style="width:100%;height:100%;object-fit:cover" />
+  <!-- Blog Grid Section -->
+  <section class="blog-grid-section">
+    <div class="container">
+      <div class="blog-grid">
+        {posts.map((post: any) => (
+          <article class="blog-card">
+            <a href={`/blog/${post.slug}`} class="card-link">
+              <div class="card-image">
+                <img src={post.image} alt={post.title} />
+                <div class="card-overlay"></div>
+                <span class="card-category">{post.category}</span>
+              </div>
+              <div class="card-content">
+                <div class="card-meta">
+                  <span class="meta-date"><i class="far fa-calendar-alt"></i> {post.date}</span>
+                  <span class="meta-author"><i class="far fa-user"></i> {client.name} Team</span>
                 </div>
-              )}
-              <div style="padding:1.25rem">
-                <p style="font-size:0.8rem;color:#9ca3af;margin-bottom:0.5rem">
-                  {post.createdAt ? new Date(post.createdAt).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }) : ''}
-                </p>
-                <h2 style="font-size:1.05rem;font-weight:700;margin-bottom:0.5rem;line-height:1.4">{post.title}</h2>
-                {post.excerpt && <p style="color:#6b7280;font-size:0.875rem;line-height:1.5">{post.excerpt}</p>}
-                <p style={`color:${primary};font-size:0.875rem;font-weight:600;margin-top:0.75rem`}>Read more →</p>
+                <h2 class="card-title">{post.title}</h2>
+                <p class="card-excerpt">{post.excerpt}</p>
+                <div class="card-footer">
+                  <span class="read-more">Read Full Article <i class="fas fa-arrow-right"></i></span>
+                </div>
               </div>
             </a>
-          ))}
-        </div>
-      ) : (
-        <div style="text-align:center;padding:4rem;color:#6b7280">
-          <div style="font-size:4rem;margin-bottom:1rem">📝</div>
-          <p style="font-size:1.1rem;font-weight:500;margin-bottom:0.5rem">Blog posts coming soon!</p>
-          <p style="font-size:0.875rem">Check back for tips and updates from our team.</p>
-        </div>
-      )}
+          </article>
+        ))}
+      </div>
     </div>
   </section>
+
+  <!-- Newsletter Section -->
+  <section class="newsletter-section">
+    <div class="container">
+      <div class="newsletter-box">
+        <div class="newsletter-content">
+          <i class="fas fa-paper-plane newsletter-icon"></i>
+          <h2>Stay Inspired</h2>
+          <p>Get seasonal maintenance tips and exclusive offers delivered straight to your inbox.</p>
+          <form class="newsletter-form">
+            <input type="email" placeholder="Your Email Address" required />
+            <button type="submit" class="btn btn-primary">Subscribe Now</button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <style define:vars={{ primary }}>
+    .container { max-width: 1400px; margin: 0 auto; padding: 0 1.5rem; }
+
+    /* Hero Section */
+    .blog-hero {
+      background: linear-gradient(rgba(0,0,0,0.85), rgba(0,0,0,0.85)), url('/images/hero_gardener.png');
+      background-size: cover;
+      background-position: center;
+      background-attachment: fixed;
+      padding: 140px 0;
+      color: #fff;
+      text-align: center;
+    }
+    .hero-content { max-width: 850px; margin: 0 auto; }
+    .blog-hero h1 { font-size: 4.5rem; font-weight: 900; margin-bottom: 1.5rem; line-height: 1.1; }
+    .blog-hero .text-accent { color: #fff; text-shadow: 0 0 20px var(--primary); }
+    .blog-hero .subtitle { display: block; font-weight: 800; letter-spacing: 4px; color: var(--primary); margin-bottom: 1rem; filter: brightness(2.5); font-size: 0.9rem; }
+    .blog-hero p { font-size: 1.25rem; opacity: 0.9; line-height: 1.7; font-weight: 300; }
+
+    /* Blog Grid */
+    .blog-grid-section { padding: 100px 0; background: #fdfdfd; }
+    .blog-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(400px, 1fr));
+      gap: 40px;
+    }
+
+    .blog-card {
+      background: #fff;
+      border-radius: 30px;
+      overflow: hidden;
+      box-shadow: 0 20px 50px rgba(0,0,0,0.05);
+      transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+      border: 1px solid #f0f0f0;
+    }
+
+    .blog-card:hover {
+      transform: translateY(-15px);
+      box-shadow: 0 40px 80px rgba(0,0,0,0.1);
+      border-color: var(--primary);
+    }
+
+    .card-link { text-decoration: none; color: inherit; display: block; height: 100%; }
+    
+    .card-image { position: relative; height: 260px; overflow: hidden; }
+    .card-image img { width: 100%; height: 100%; object-fit: cover; transition: 0.8s; }
+    .blog-card:hover .card-image img { transform: scale(1.1); }
+    .card-overlay { position: absolute; inset: 0; background: linear-gradient(to bottom, transparent, rgba(0,0,0,0.3)); }
+    
+    .card-category {
+      position: absolute;
+      top: 25px;
+      left: 25px;
+      background: var(--primary);
+      color: #fff;
+      padding: 6px 18px;
+      border-radius: 10px;
+      font-size: 0.75rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      z-index: 2;
+    }
+
+    .card-content { padding: 40px; }
+    .card-meta { display: flex; gap: 20px; font-size: 0.85rem; color: #999; margin-bottom: 1.5rem; font-weight: 600; }
+    .card-meta i { color: var(--primary); margin-right: 5px; }
+    
+    .card-title { font-size: 1.7rem; font-weight: 800; color: #111; line-height: 1.3; margin-bottom: 1.2rem; transition: color 0.3s; }
+    .blog-card:hover .card-title { color: var(--primary); }
+    
+    .card-excerpt { color: #666; line-height: 1.8; font-size: 1.05rem; margin-bottom: 2rem; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
+    
+    .card-footer { padding-top: 25px; border-top: 1px solid #f5f5f5; }
+    .read-more { color: var(--primary); font-weight: 800; font-size: 0.9rem; text-transform: uppercase; letter-spacing: 1px; display: flex; align-items: center; gap: 10px; }
+    .read-more i { transition: transform 0.3s; }
+    .blog-card:hover .read-more i { transform: translateX(5px); }
+
+    /* Newsletter Section */
+    .newsletter-section { padding: 0 0 100px 0; background: #fdfdfd; }
+    .newsletter-box { 
+      background: #111; 
+      border-radius: 40px; 
+      overflow: hidden; 
+      position: relative; 
+      text-align: center;
+      padding: 100px 60px;
+      background: linear-gradient(135deg, rgba(var(--primary-rgb), 0.85), #111), url('/images/garden_design.png');
+      background-size: cover;
+      color: #fff;
+    }
+    .newsletter-icon { font-size: 3rem; color: var(--primary); margin-bottom: 2rem; filter: brightness(1.5); }
+    .newsletter-box h2 { font-size: 3.5rem; font-weight: 900; margin-bottom: 1rem; }
+    .newsletter-box p { font-size: 1.3rem; opacity: 0.9; max-width: 600px; margin: 0 auto 3rem; }
+    
+    .newsletter-form { display: flex; max-width: 600px; margin: 0 auto; gap: 1rem; background: #fff; padding: 10px; border-radius: 20px; box-shadow: 0 20px 40px rgba(0,0,0,0.2); }
+    .newsletter-form input { flex-grow: 1; border: none; padding: 0 25px; font-size: 1rem; outline: none; border-radius: 12px; }
+    .btn-primary { background: var(--primary); color: #fff; padding: 1.1rem 2.5rem; border-radius: 12px; font-weight: 800; border: none; cursor: pointer; text-transform: uppercase; letter-spacing: 1px; }
+
+    @media (max-width: 768px) {
+      .blog-hero h1 { font-size: 3rem; }
+      .blog-grid { grid-template-columns: 1fr; }
+      .newsletter-form { flex-direction: column; background: transparent; box-shadow: none; padding: 0; }
+      .newsletter-form input { height: 60px; border-radius: 12px; }
+      .newsletter-box h2 { font-size: 2.5rem; }
+    }
+  </style>
 
 </Layout>

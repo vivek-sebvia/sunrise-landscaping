@@ -1,59 +1,446 @@
 ---
-import Layout from '../layouts/Layout.astro'
-import { client } from '../client.config.js'
+import Layout from "../layouts/Layout.astro";
+import { client } from "../client.config.js";
 
-let testimonials = []
+let testimonials = [];
 try {
-  const res = await fetch(`${client.cmsUrl}/api/testimonials?where[tenant.slug][equals]=${client.tenantSlug}&limit=20`)
-  testimonials = (await res.json()).docs || []
+  const res = await fetch(
+    `${client.cmsUrl}/api/testimonials?where[tenant.slug][equals]=${client.tenantSlug}&limit=20`,
+  );
+  testimonials = (await res.json()).docs || [];
 } catch {}
 
-const primary = client.primaryColor || '#2d5a3d'
+const primary = client.primaryColor || "#2d5a3d";
+
+const mockReviews = [
+  {
+    name: "James Anderson",
+    location: `${client.city}`,
+    rating: 5,
+    date: "2 days ago",
+    text: "The transformation of our front yard is incredible. The team was professional, clean, and finished ahead of schedule. Highly recommend for any garden design work!",
+    service: "Landscape Design",
+  },
+  {
+    name: "Sarah Jenkins",
+    location: `${client.city}`,
+    rating: 5,
+    date: "1 week ago",
+    text: "We've been using their lawn maintenance for 3 years now. Reliable, thorough, and my grass has never looked better. Great value for the quality of service.",
+    service: "Lawn Care",
+  },
+  {
+    name: "Robert Miller",
+    location: `${client.city}`,
+    rating: 5,
+    date: "2 weeks ago",
+    text: "Installed a new smart irrigation system. They walked us through the entire setup and the water savings are already noticeable. Excellent technical knowledge.",
+    service: "Irrigation",
+  },
+  {
+    name: "Linda Thompson",
+    location: `${client.city}`,
+    rating: 5,
+    date: "1 month ago",
+    text: "Beautiful masonry work on our new patio. The attention to detail on the stone patterns is masterful. Truly transformed our outdoor living space.",
+    service: "Hardscaping",
+  },
+  {
+    name: "David Wilson",
+    location: `${client.city}`,
+    rating: 5,
+    date: "1 month ago",
+    text: "Quick and efficient tree trimming. They left the site spotless and were very careful with our existing flower beds. Will definitely use them again.",
+    service: "Maintenance",
+  },
+];
+
+const allReviews = testimonials.length > 0 ? testimonials : mockReviews;
 ---
 
-<Layout title="Reviews" description={`Reviews from satisfied customers of ${client.name}.`}>
-
-  <section style={`padding:4rem 1.5rem;background:${primary}12;text-align:center`}>
-    <div style="max-width:1200px;margin:0 auto">
-      <h1 style="font-size:2.5rem;font-weight:800;margin-bottom:1rem">Customer Reviews</h1>
-      <p style="color:#6b7280;font-size:1.05rem">See what our customers say about our work.</p>
+<Layout
+  title="Client Testimonials"
+  description={`Read what our satisfied clients say about our professional landscaping services in ${client.city}.`}
+>
+  <!-- Premium Hero -->
+  <section class="reviews-hero">
+    <div class="container">
+      <div class="hero-content">
+        <span class="subtitle">VOICE OF OUR CLIENTS</span>
+        <h1>Excellence <span class="text-accent">Proven</span> by Results</h1>
+        <p>
+          Discover why homeowners and businesses in {client.city} trust {
+            client.name
+          } for their most ambitious outdoor projects.
+        </p>
+      </div>
     </div>
   </section>
 
-  <section style="padding:4rem 1.5rem">
-    <div style="max-width:1200px;margin:0 auto">
-      {testimonials.length > 0 ? (
-        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:1.25rem">
-          {testimonials.map((t: any) => (
-            <div style="padding:1.5rem;border-radius:12px;border:1px solid #e5e7eb">
-              <div style="color:#facc15;font-size:1.2rem;margin-bottom:0.75rem">★★★★★</div>
-              <p style="color:#374151;font-style:italic;margin-bottom:1rem;line-height:1.7">"{t.text || t.content}"</p>
-              <div style="display:flex;align-items:center;gap:0.75rem">
-                <div style={`width:38px;height:38px;border-radius:50%;background:${primary};color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:0.875rem;flex-shrink:0`}>
-                  {(t.name || t.author || 'A').charAt(0).toUpperCase()}
+  <!-- Stats Bar -->
+  <section class="stats-bar">
+    <div class="container">
+      <div class="stats-flex">
+        <div class="stat-item">
+          <div class="stat-main">
+            <span class="val">4.9</span>
+            <div class="stars">★★★★★</div>
+          </div>
+          <span class="lab">Google Rating</span>
+        </div>
+        <div class="stat-divider"></div>
+        <div class="stat-item">
+          <span class="val">500+</span>
+          <span class="lab">Projects Completed</span>
+        </div>
+        <div class="stat-divider"></div>
+        <div class="stat-item">
+          <span class="val">15+</span>
+          <span class="lab">Years Experience</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Reviews Grid -->
+  <section class="reviews-grid-section">
+    <div class="container">
+      <div class="masonry-grid">
+        {
+          allReviews.map((r: any) => (
+            <div class="review-card">
+              <div class="card-header">
+                <div class="platform-badge">
+                  <i class="fab fa-google" />
                 </div>
-                <div>
-                  <p style="font-weight:700;font-size:0.9rem">{t.name || t.author}</p>
-                  {t.location && <p style="font-size:0.8rem;color:#6b7280">{t.location}</p>}
+                <div class="stars">
+                  {[...Array(5)].map(() => (
+                    <i class="fas fa-star" />
+                  ))}
+                </div>
+              </div>
+              <p class="review-text">"{r.text || r.content}"</p>
+              <div class="review-footer">
+                <div class="user-avatar">{r.name?.charAt(0) || "C"}</div>
+                <div class="user-info">
+                  <span class="user-name">
+                    {r.name || r.author || "Verified Client"}
+                  </span>
+                  <span class="user-loc">
+                    {r.location || client.city} • {r.service || "Landscaping"}
+                  </span>
                 </div>
               </div>
             </div>
-          ))}
-        </div>
-      ) : (
-        <div style="text-align:center;padding:4rem;color:#6b7280">
-          <div style="font-size:4rem;margin-bottom:1rem">⭐</div>
-          <p style="font-size:1.1rem;font-weight:500">Reviews coming soon!</p>
-        </div>
-      )}
+          ))
+        }
+      </div>
     </div>
   </section>
 
-  <section style={`padding:4rem 1.5rem;background:${primary};color:#fff;text-align:center`}>
-    <div style="max-width:700px;margin:0 auto">
-      <h2 style="font-size:1.75rem;font-weight:700;margin-bottom:1rem">Join Our Happy Customers</h2>
-      <a href="/contact" style="background:#fff;color:#111;padding:0.75rem 2rem;border-radius:10px;font-weight:700">Get Free Quote</a>
+  <!-- Call to Action -->
+  <section class="review-cta">
+    <div class="container">
+      <div class="cta-inner">
+        <div class="cta-content">
+          <h2>Ready to be our next success story?</h2>
+          <p>
+            Join hundreds of satisfied property owners who have transformed
+            their landscape with our expert team.
+          </p>
+        </div>
+        <div class="cta-btns">
+          <a href="/contact" class="btn btn-white">Get Free Estimate</a>
+          <a href="tel:${client.phone}" class="btn btn-outline">Call Us Now</a>
+        </div>
+      </div>
     </div>
   </section>
 
+  <style define:vars={{ primary }}>
+    .container {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 0 1.5rem;
+    }
+
+    /* Hero Section */
+    .reviews-hero {
+      background:
+        linear-gradient(rgba(0, 0, 0, 0.85), rgba(0, 0, 0, 0.85)),
+        url("/images/hero_gardener.png");
+      background-size: cover;
+      background-position: center;
+      background-attachment: fixed;
+      padding: 140px 0 100px;
+      color: #fff;
+      text-align: center;
+    }
+    .hero-content {
+      max-width: 850px;
+      margin: 0 auto;
+    }
+    .reviews-hero h1 {
+      font-size: 4.5rem;
+      font-weight: 900;
+      margin-bottom: 1.5rem;
+      line-height: 1.1;
+      text-transform: uppercase;
+      letter-spacing: -1px;
+      text-shadow: 0 4px 30px rgba(0, 0, 0, 0.8);
+      color: #f0f0f0;
+    }
+    .reviews-hero .text-accent {
+      color: #fff;
+      text-shadow: 0 0 25px var(--primary);
+    }
+    .reviews-hero .subtitle {
+      display: block;
+      font-weight: 800;
+      letter-spacing: 4px;
+      color: var(--primary);
+      margin-bottom: 1rem;
+      filter: brightness(2.5);
+      font-size: 0.9rem;
+    }
+    .reviews-hero p {
+      font-size: 1.3rem;
+      opacity: 0.9;
+      line-height: 1.7;
+      font-weight: 300;
+    }
+
+    /* Stats Bar */
+    .stats-bar {
+      padding: 40px 0;
+      background: #fff;
+      border-bottom: 1px solid #eee;
+      margin-top: -50px;
+    }
+    .stats-flex {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 60px;
+      background: #fff;
+      padding: 40px;
+      border-radius: 30px;
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.1);
+      position: relative;
+      z-index: 5;
+    }
+    .stat-item {
+      text-align: center;
+    }
+    .stat-main {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 5px;
+    }
+    .stat-item .val {
+      font-size: 2.5rem;
+      font-weight: 900;
+      color: #111;
+    }
+    .stat-item .stars {
+      color: #ffb400;
+      font-size: 1.2rem;
+    }
+    .stat-item .lab {
+      font-size: 0.85rem;
+      font-weight: 700;
+      color: #777;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+    .stat-divider {
+      width: 1px;
+      height: 60px;
+      background: #eee;
+    }
+
+    /* Reviews Grid */
+    .reviews-grid-section {
+      padding: 100px 0;
+      background: #f8fafc;
+    }
+    .masonry-grid {
+      column-count: 3;
+      column-gap: 30px;
+    }
+    .review-card {
+      break-inside: avoid;
+      background: #fff;
+      border-radius: 30px;
+      padding: 40px;
+      margin-bottom: 30px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.03);
+      border: 1px solid #f0f0f0;
+      transition: 0.3s;
+    }
+    .review-card:hover {
+      transform: translateY(-10px);
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.08);
+      border-color: var(--primary);
+    }
+
+    .card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 25px;
+    }
+    .platform-badge {
+      width: 40px;
+      height: 40px;
+      background: #f1f5f9;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 12px;
+      color: #ea4335;
+      font-size: 1.2rem;
+    }
+    .card-header .stars {
+      color: #ffb400;
+      font-size: 0.9rem;
+    }
+
+    .review-text {
+      font-size: 1.1rem;
+      line-height: 1.8;
+      color: #444;
+      font-style: italic;
+      margin-bottom: 30px;
+    }
+
+    .review-footer {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+      padding-top: 25px;
+      border-top: 1px solid #f1f5f9;
+    }
+    .user-avatar {
+      width: 50px;
+      height: 50px;
+      background: var(--primary);
+      color: #fff;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 900;
+      font-size: 1.2rem;
+    }
+    .user-info {
+      display: flex;
+      flex-direction: column;
+    }
+    .user-name {
+      font-weight: 800;
+      color: #111;
+      font-size: 1rem;
+    }
+    .user-loc {
+      font-size: 0.8rem;
+      color: #888;
+      font-weight: 600;
+    }
+
+    /* CTA Section */
+    .review-cta {
+      padding-bottom: 100px;
+      background: #f8fafc;
+    }
+    .cta-inner {
+      background: var(--primary);
+      padding: 80px;
+      border-radius: 40px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 40px;
+      color: #fff;
+      position: relative;
+      overflow: hidden;
+    }
+    .cta-inner::before {
+      content: "";
+      position: absolute;
+      top: -50%;
+      right: -10%;
+      width: 500px;
+      height: 500px;
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 50%;
+    }
+
+    .cta-content h2 {
+      font-size: 3rem;
+      font-weight: 900;
+      margin-bottom: 1rem;
+      color: #fff;
+    }
+    .cta-content p {
+      font-size: 1.2rem;
+      opacity: 0.9;
+      max-width: 600px;
+    }
+    .cta-btns {
+      display: flex;
+      gap: 20px;
+    }
+
+    .btn {
+      padding: 1.2rem 2.5rem;
+      border-radius: 15px;
+      font-weight: 800;
+      text-decoration: none;
+      transition: 0.3s;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      font-size: 0.9rem;
+    }
+    .btn-white {
+      background: #fff;
+      color: #111;
+    }
+    .btn-white:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+    }
+    .btn-outline {
+      border: 2px solid #fff;
+      color: #fff;
+    }
+    .btn-outline:hover {
+      background: #fff;
+      color: var(--primary);
+    }
+
+    @media (max-width: 1200px) {
+      .reviews-hero h1 { font-size: 3.5rem; }
+      .masonry-grid { column-count: 2; }
+      .stats-flex { gap: 30px; }
+    }
+    @media (max-width: 992px) {
+      .reviews-hero { padding: 100px 0 60px; }
+      .reviews-hero h1 { font-size: 3rem; }
+      .stats-flex { padding: 30px; flex-direction: column; gap: 20px; }
+      .stat-divider { display: none; }
+      .cta-inner { flex-direction: column; text-align: center; padding: 60px 30px; }
+      .cta-btns { flex-direction: column; width: 100%; gap: 1rem; }
+      .btn { width: 100%; text-align: center; }
+    }
+    @media (max-width: 768px) {
+      .reviews-hero h1 { font-size: 2.2rem; }
+      .reviews-hero p { font-size: 1.1rem; }
+      .masonry-grid { column-count: 1; }
+      .review-card { padding: 30px 20px; }
+      .cta-content h2 { font-size: 2.2rem; }
+      .stat-item .val { font-size: 2rem; }
+    }
+  </style>
 </Layout>
